@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UGDS 2 VS 2</title>
+<title>DS 2 vs 2</title>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
@@ -196,6 +196,29 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   font-weight: 800;
   text-align: center;
 }
+.controls-info {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  text-align: left;
+  font-family: "Saira", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.controls-info h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--accent);
+  text-align: center;
+}
+.controls-info p {
+    margin: 0.25rem 0;
+}
 </style>
 </head>
 
@@ -220,6 +243,16 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
         <label for="timer-minutes">Timer (minutes)</label>
         <input type="number" id="timer-minutes" value="5" min="1" max="59">
       </div>
+    </div>
+    <div class="controls-info">
+        <h2>Controls</h2>
+        <p><strong>Enter:</strong> Start Timer</p>
+        <p><strong>Space:</strong> Pause/Resume Timer</p>
+        <p><strong>R:</strong> Reset Timer</p>
+        <p><strong>1-3:</strong> Show Resolutions</p>
+        <p><strong>4:</strong> Show Logo</p>
+        <p><strong>5:</strong> Show Timer</p>
+        <p><strong>Esc:</strong> Back to Settings</p>
     </div>
   </section>
 
@@ -259,6 +292,28 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   const slides = document.querySelectorAll(".slide");
   let activeIndex = 0, busy = false;
 
+  // === Cookie functions ===
+  function setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+          let c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+  }
+
   // === Get new elements ===
   const res1Input = document.getElementById('res1');
   const res2Input = document.getElementById('res2');
@@ -269,6 +324,38 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   const resDisplay2 = document.getElementById('res-display-2');
   const resDisplay3 = document.getElementById('res-display-3');
 
+  // === Settings functions ===
+  function saveSettings() {
+      setCookie('res1', res1Input.value, 365);
+      setCookie('res2', res2Input.value, 365);
+      setCookie('res3', res3Input.value, 365);
+      setCookie('timerMinutes', timerMinutesInput.value, 365);
+  }
+
+  function loadSettings() {
+      const res1 = getCookie('res1');
+      if (res1) res1Input.value = res1;
+
+      const res2 = getCookie('res2');
+      if (res2) res2Input.value = res2;
+
+      const res3 = getCookie('res3');
+      if (res3) res3Input.value = res3;
+
+      const timerMinutes = getCookie('timerMinutes');
+      if (timerMinutes) timerMinutesInput.value = timerMinutes;
+      
+      updateResolutionDisplays();
+      
+      let newMinutes = parseInt(timerMinutesInput.value, 10);
+      if (!isNaN(newMinutes) && newMinutes > 0) {
+          timer1Minutes = newMinutes;
+          if (timer4) {
+              timer4.updateTotal(timer1Minutes * 60);
+          }
+      }
+  }
+
   // === Update resolution display slides ===
   function updateResolutionDisplays() {
     resDisplay1.textContent = res1Input.value;
@@ -277,13 +364,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   }
 
   // === Event listeners for resolution inputs ===
-  res1Input.addEventListener('input', updateResolutionDisplays);
-  res2Input.addEventListener('input', updateResolutionDisplays);
-  res3Input.addEventListener('input', updateResolutionDisplays);
+  res1Input.addEventListener('input', () => { updateResolutionDisplays(); saveSettings(); });
+  res2Input.addEventListener('input', () => { updateResolutionDisplays(); saveSettings(); });
+  res3Input.addEventListener('input', () => { updateResolutionDisplays(); saveSettings(); });
   
-  // === Initial update ===
-  updateResolutionDisplays();
-
   /* === 🔧 easy timer setup === */
   let timer1Minutes = parseInt(timerMinutesInput.value, 10);
   const TIMER2_MINUTES = 10; // change this to adjust second timer
@@ -420,6 +504,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
             timer4.updateTotal(timer1Minutes * 60);
         }
       }
+      saveSettings();
   });
 
   timerMinutesInput.addEventListener('blur', () => {
@@ -431,7 +516,11 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
               timer4.updateTotal(timer1Minutes * 60);
           }
       }
+      saveSettings();
   });
+
+  // === Initial Load ===
+  loadSettings();
 
 
 
