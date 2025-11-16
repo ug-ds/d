@@ -30,8 +30,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
 .slide{
   position:absolute;inset:0;display:grid;place-items:center;
   opacity:0;transform:translateY(60px);filter:blur(var(--blur));overflow: hidden;
-  transition:opacity var(--transition),transform var(--transition),filter var(--transition);
-  transition:opacity var(--transition),transform var(--transition),filter var(--transition), background-color 0.2s ease;
+  transition: opacity var(--transition), transform var(--transition), filter var(--transition), background-color 0.4s ease;
   pointer-events: none;
 }
 .slide.active{opacity:1;transform:translateY(0);filter:none;overflow: hidden; pointer-events: auto;}
@@ -626,7 +625,7 @@ body.hide-cursor {
       const rem=Math.max(totalSeconds-ce,0);
       const o=fmt(Math.ceil(totalSeconds-elapsed));
       const n=fmt(Math.ceil(rem));
-      if(o!==n){updateDisplay(o,n);playSound(timerTick);}
+      if(o!==n){updateDisplay(o,n); if (rem > 0) playSound(timerTick);}
       elapsed=ce;
 
       if(rem<=0 && !finished){
