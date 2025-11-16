@@ -70,6 +70,8 @@
         object-fit: cover;
         object-position: center;
         display: block;
+        transition: transform 0.3s ease;
+        transform-origin: bottom;
     }
 
     .card-content {
@@ -85,6 +87,7 @@
         margin: 0 0 0.5rem 0;
         color: var(--text);
         font-family: "Saira", sans-serif;
+        transition: color 0.2s ease;
     }
 
     .card-description {
@@ -96,8 +99,15 @@
     }
 
     .gallery-button:hover {
-      transform: translateY(-5px);
-      background-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .gallery-button:hover .card-title {
+      color: var(--accent);
+    }
+
+    .gallery-button:hover .card-image {
+      transform: scale(1.02);
     }
   </style>
 </head>
