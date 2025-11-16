@@ -465,8 +465,6 @@ input:checked + .slider:before { transform: translateX(26px); }
   function saveSettings() {
       setCookie('timer1Minutes', timer1MinutesInput.value, 365);
       setCookie('timer2Minutes', timer2MinutesInput.value, 365);
-      setCookie('timer1Test', timer1TestToggle.checked, 365);
-      setCookie('timer2Test', timer2TestToggle.checked, 365);
   }
 
   function loadSettings() {
@@ -542,7 +540,7 @@ input:checked + .slider:before { transform: translateX(26px); }
   // === slide 3 countdown ===
   let countdownRunning = false;
   async function startCountdown(slide) {
-    if (activeIndex !== 3 || countdownRunning) return;
+    if (activeIndex !== 3 || countdownRunning || timer4.running || timer5.running) return;
     
     await Promise.all([audioReady(countBeep), audioReady(countEnd)]);
 
@@ -692,6 +690,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 
     async function showOverlay(){
       if(overlayActive||countdownRunning)return;
+      if(overlayActive||countdownRunning||running)return;
 
       await Promise.all([audioReady(countBeep), audioReady(countEnd)]);
 
@@ -815,15 +814,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 
     if (k === 'Escape') {
         const t = currentTimer();
-        if (t) {
-            t.reset();
-        }
+        if (t) t.reset();
         showSlide(0);
-        return;
-    }
-
-    if (k === 'Enter' && activeIndex === 0) {
-        showSlide(1);
         return;
     }
 
