@@ -1,163 +1,1028 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UG Debating Society</title>
-  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/refs/heads/main/assets/ug%20ds%20logo%20favicon.png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DS 1 vs N</title>
+<link rel="icon" type="image/x-icon" href="assets/ug%20ds%20logo%20favicon.png">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 
-  <style>
-    :root {
-      --bg: #0C1A22;
-      --accent: #ED3737;
-      --text: #fff;
-    }
+<style>
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      font-family: "Noto Sans Georgian", sans-serif;
-    }
+:root {
+  --bg: #0C1A22;
+  --accent: #ED3737;
+  --text: #fff;
+  --photo-size: 90vmin;
+  --blur: 20px;
+  --transition: 1s cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden;}
+.slides{position:relative;width:100%;height:100%;  font-family: "Noto Sans Georgian", sans-serif;}
 
-    .navbar {
-      padding: 0.1rem 1rem;
-      background-color: #081218;
-    }
+/* === Base Slide Animation === */
+.slide{
+  position:absolute;inset:0;display:grid;place-items:center;
+  opacity:0;transform:translateY(60px);filter:blur(var(--blur));overflow: hidden;
+  transition:opacity var(--transition),transform var(--transition),filter var(--transition);
+  pointer-events: none;
+}
+.slide.active{opacity:1;transform:translateY(0);filter:none;overflow: hidden; pointer-events: auto;}
+.slide.exit{opacity:0;transform:translateY(-60px);filter:blur(var(--blur));overflow: hidden;}
 
-    .logo-link {
-      display: inline-block;
-      vertical-align: middle;
-    }
+/* === Slide 1 (center photo) === */
+#slide-1 img{
+  width:var(--photo-size);height:var(--photo-size);
+  object-fit:cover;border-radius:0;
+  opacity:0;transform:scale(0.8);filter:blur(10px);
+  transition:opacity 1.2s ease,transform 2s ease,filter 1.2s ease;
+}
+#slide-1.active img{
+  opacity:1;transform:scale(1);filter:blur(0);
+}
 
-    .logo-img {
-      height: 90px;
-      display: block;
-      transition: transform 0.2s ease;
-    }
 
-    .gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-        padding: 2rem;
-        max-width: 1200px;
-        margin: auto;
-    }
+#slide-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg);
+}
 
-    .gallery-button {
-        background-color: hsl(202, 38%, 13%);
-        color: var(--text);
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 1.2rem;
-        transition: transform 0.2s ease, background-color 0.2s ease;
-        overflow: hidden; /* To keep the image corners rounded */
-        display: flex;
-        flex-direction: column;
-    }
+/* === Slide 2 (fullscreen image) === */
+#slide-2 img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  background-color: var(--bg);
+}
 
-    .card-image {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-        transition: transform 0.3s ease;
-        transform-origin: bottom;
-    }
+/* === Slide 3 (3-2-1 countdown) === */
+#slide-3{
+  background:var(--bg);
+  color:var(--text);
+  transition: background-color .8s,color .8s;
+  display:grid;place-items:center;
+}
+#slide-3.switch{background:var(--accent);color:var(--bg);}
+.slide-inner{
+  opacity:0;transform:translateY(60px);filter:blur(var(--blur));
+  transition:opacity var(--transition),transform var(--transition),filter var(--transition);
+}
+#slide-3.active .slide-inner{opacity:1;transform:translateY(0);filter:none;}
+.title{
+  font-size:clamp(100px,8vmin,120px);
+  font-weight:800;letter-spacing:.03em;
+  opacity:1;transition:opacity .5s ease;
+}
+.title.hidden{opacity:0;}
+.countdown{position:absolute;inset:0;display:grid;place-items:center;font-family: "Saira", sans-serif;}
+.circle {
+  width: 400px;
+  height: 400px;
+  border: 20px solid var(--text);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 200px;
+  font-weight: 600;
+  color: var(--text);
+  animation: circleAnim 3s linear forwards;
+}
+.circle.inverted{border-color:var(--bg);color:var(--bg);}
+@keyframes circleAnim{0%{transform:scale(1);}100%{transform:scale(1.2);}}
 
-    .card-content {
-        padding: 1.5rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
+/* === Slide 4 (Timer) === */
+.timer {
+  font-family: "Saira", sans-serif;
+  font-weight: 700;font-variant-numeric: tabular-nums;
+  font-size: clamp(48px, 40vmin, 440px);
+  letter-spacing: .03em;position:relative;
+  display:flex;gap:0.02em;color:var(--text);
+  transition:color .3s ease, filter .6s ease, opacity .6s ease;
+}
+.timer.paused{color:var(--accent);}
+.timer.resetting{
+  filter:blur(60px);
+  opacity:0;
+  transition:filter 1s ease, opacity 1s ease;
+}
+.timer .digit{position:relative;display:inline-block;width:1ch;text-align:center;}
+.digit .prev,.digit .next{
+  position:absolute;inset:0;display:flex;justify-content:center;align-items:center;
+}
+.digit .prev{opacity:1;filter:none;transform:translateY(0);}
+.digit .next{opacity:0;filter:blur(20px);transform:translateY(40%);}
+.digit.anim .prev{animation:fadeOut .4s ease forwards;}
+.digit.anim .next{animation:fadeIn .4s ease forwards;}
+@keyframes fadeOut{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-40%);filter:blur(10px);} }
+@keyframes fadeIn{0%{opacity:0;transform:translateY(40%);filter:blur(10px);}100%{opacity:1;transform:translateY(0);filter:none;}}
 
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin: 0 0 0.5rem 0;
-        color: var(--text);
-        font-family: "Saira", sans-serif;
-        transition: color 0.2s ease;
-    }
+/* === Slide 5 (QR) === */
+.qr-wrap {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  text-align: center;
+  height: 100%;
+}
+.qr-box {
+  width: var(--photo-size);
+  height: var(--photo-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+  overflow: hidden;
+}
+.qr-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.qr-text{font-size:4rem;font-weight:800;color:#fff;letter-spacing:2px;margin-top:0;}
 
-    .card-description {
-        font-size: 1rem;
-        color: #b0c4de; /* A lighter, less prominent text color */
-        line-height: 1.4;
-        margin: 0;
-        flex-grow: 1;
-    }
+/* === Placeholder (Slide 6) === */
+.placeholder{font-size:clamp(32px,10vmin,120px);font-weight:900;opacity:.8;}
 
-    .gallery-button:hover {
-      transform: translateY(-2px);
-    }
+.timer-overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  background: rgba(12, 26, 34, 0.3);
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  transition: opacity 0.5s ease;
+}
 
-    .gallery-button:hover .card-title {
-      color: var(--accent);
-    }
+.controls-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(12, 26, 34, 0.75);
+  backdrop-filter: blur(20px);
+  color: var(--text);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 99;
+}
+.controls-overlay.visible {opacity: 1;}
+.controls-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 2rem 3rem;
+  text-align: left;
+  font-size: 1.5rem;
+  line-height: 1.8;
+}
+.controls-box h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: var(--accent);
+}
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 80%;
+  max-width: 1000px;
+}
+.setting {
+  display: flex;
+  flex-direction: column;
+}
+.setting label {
+  font-size: 1.5rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+.setting input {
+  font-size: 1.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 2px solid var(--accent);
+  background-color: var(--bg);
+  color: #fff;
+  font-family: "Saira", sans-serif;
+}
+.timer-with-photo-container {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
 
-    .gallery-button:hover .card-image {
-      transform: scale(1.02);
-    }
-  </style>
+.timer-top-image {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 30vmin;
+    margin-bottom: 10rem;
+}
+.start-prompt {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 2rem;
+  color: var(--text);
+  opacity: 1;
+  text-transform: uppercase;
+  font-family: "Saira", sans-serif;
+}
+body.hide-cursor {
+  cursor: none;
+}
+.reset-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  background-color: var(--accent);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  justify-self: center;
+  font-family: "Noto Sans Georgian", sans-serif;
+}
+.reset-button:hover {
+  background-color: var(--accent);
+}
+.setting.toggle {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 20px;
+}
+
+.setting.toggle label {
+  margin-bottom: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2a4458;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute; content: ""; height: 26px; width: 26px;
+  left: 4px; bottom: 4px; background-color: white;
+  transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+.home-logo-link {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  width: 120px;
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+.home-logo-link:hover {
+  transform: scale(1.05);
+}
+.home-logo-link img {
+  width: 100%;
+}
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.5rem;
+  z-index: 1000;
+  padding: 2rem;
+  font-family: "Noto Sans Georgian", sans-serif;
+}
+.mobile-overlay-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 1200px) {
+  .mobile-overlay {
+    display: flex;
+  }
+}
+</style>
 </head>
+
 <body>
-
-  <nav class="navbar">
-    <a href="https://ug-ds.github.io" class="logo-link">
-      <img src="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/761a9da78b14f5bafe56827eaed0f8e0d54bead8/assets/ug%20ds%20logo%20svg.svg" alt="UGDS Logo" class="logo-img">
+<div class="mobile-overlay">
+  <div class="mobile-overlay-icon">⚠️</div>
+  <div>This website is not supported on mobile devices. Please use a desktop browser.</div>
+</div>
+<div class="slides">
+  
+  <section class="slide active" id="slide-0">
+    <a href="https://ug-ds.github.io" class="home-logo-link">
+      <img src="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/761a9da78b14f5bafe56827eaed0f8e0d54bead8/assets/ug%20ds%20logo%20svg.svg" alt="Home Logo">
     </a>
-  </nav>
-
-  <main>
-    <div id="button-gallery" class="gallery">
-      <!-- Buttons will be inserted here by the script -->
+    <div class="settings-container">
+      <div class="setting">
+        <label for="timer1-minutes">First Timer (min)</label>
+        <input type="number" id="timer1-minutes" value="20" min="1" max="59">
+      </div>
+      <div class="setting">
+        <label for="timer2-minutes">Second Timer (min)</label>
+        <input type="number" id="timer2-minutes" value="10" min="1" max="59">
+      </div>
+      <div class="setting toggle">
+        <label for="audio-toggle">Enable Audio</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="audio-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button id="reset-settings-btn" class="reset-button">Reset to Default</button>
     </div>
-  </main>
+    <div class="start-prompt">press enter to start</div>
+  </section>
 
-  <script>
-    const links = [
-      { 
-        name: "1 VS N", 
-        url: "1vsN.html", 
-        description: "ჩარლი კირკის მსგავსი დებატები, სადაც ერთი ადამიანი კონკრეტული დროის განმავლობაში ედებატება რამოდენიმე მოწინააღმდეგეს",
-        image: "assets/IMG-1VSN.svg"
-      },
-      { 
-        name: "2 VS 2", 
-        url: "2vs2.html", 
-        description: "2-2 ზე დებატები, სადაც გუნდურად ედებატება ორი ადამიანი",
-        image: "assets/IMG-2VS2.svg"
-      },
-    ];
+  <section class="slide" id="slide-1">
+    <img src="https://github.com/David3dArt/UGSTUFF/raw/refs/heads/main/assetsimg/ug%20ds%20logo%20svg%20web%202.svg" alt="Centered photo">
+  </section>
 
-    const gallery = document.getElementById('button-gallery');
+  <section class="slide" id="slide-2">
+    <img src="https://github.com/David3dArt/ug-ds-assets-0101555/raw/refs/heads/main/ug%20ds%20rules.svg" alt="Full screen fit image">
+  </section>
 
-    links.forEach(link => {
-      const a = document.createElement('a');
-      a.href = link.url; // The href is on the main card
-      a.className = 'gallery-button';
+  <section class="slide" id="slide-3">
+    <div class="slide-inner">
+      <div class="title" id="slide3Title" style="font-size: 250px; font-weight: 700;">START</div>
+    </div>
+  </section>
 
-      a.innerHTML = `
-        <img src="${link.image}" alt="${link.name}" class="card-image">
-        <div class="card-content">
-          <h3 class="card-title">${link.name}</h3>
-          <p class="card-description">${link.description}</p>
+  <section class="slide" id="slide-4">
+    <div class="timer-with-photo-container">
+        <img src="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/761a9da78b14f5bafe56827eaed0f8e0d54bead8/assets/ug%20ds%20logo%20svg.svg" alt="UGDS Logo" class="timer-top-image">
+        <div class="timer" id="timer"></div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-5">
+    <div class="qr-wrap">
+      <a href="https://app.sli.do/event/1xCQRhnPoK9bEytcj23We8/live/polls" target="_blank">
+        <div class="qr-box">
+          <object class="qr-svg" type="image/svg+xml"
+            data="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Fapp.sli.do%2Fevent%2F1xCQRhnPoK9bEytcj23We8%2Flive%2Fpolls&format=svg&color=ffffff&bgcolor=0C1A22&size=500x500">
+          </object>
         </div>
-      `;
-      gallery.appendChild(a);
+      </a>
+      <div class="qr-text">VOTE</div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-6">
+    <div class="placeholder"></div>
+  </section>
+</div>
+
+<!-- preload audio elements -->
+<audio id="countBeep" src="/sfx/tick%203s%20timer%203.mp3" preload="auto"></audio>
+<audio id="countEnd"  src="/sfx/tick%203s%20timer%202.mp3" preload="auto"></audio>
+<audio id="timerTick" src="/sfx/timer%20tick.mp3" preload="auto"></audio>
+<audio id="timesup" src="/sfx/times_up.mp3" preload="auto"></audio>
+
+<script>
+(function(){
+  const slides = document.querySelectorAll(".slide");
+  let activeIndex = 0, busy = false, resetting = false;
+  const COUNTDOWN_SPEED = 900;
+  const ZERO_HOLD_TIME = 3000;
+
+  // === Cookie functions ===
+  function setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+  }
+
+  function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+          let c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+  }
+
+  // === Get new elements ===
+  const timer1MinutesInput = document.getElementById('timer1-minutes');
+  const timer2MinutesInput = document.getElementById('timer2-minutes');
+
+  /* === 🔧 easy timer setup === */
+  let timer1Minutes = 20;
+  let timer2Minutes = 10;
+
+  // === Settings functions ===
+  function saveSettings() {
+      setCookie('timer1Minutes', timer1MinutesInput.value, 365);
+      setCookie('timer2Minutes', timer2MinutesInput.value, 365);
+      setCookie('timer1Test', timer1TestToggle.checked, 365);
+      setCookie('timer2Test', timer2TestToggle.checked, 365);
+  }
+
+  function loadSettings() {
+      const t1 = getCookie('timer1Minutes');
+      if (t1) timer1MinutesInput.value = t1;
+
+      const t2 = getCookie('timer2Minutes');
+      if (t2) timer2MinutesInput.value = t2;
+      
+      let newMinutes1 = parseInt(timer1MinutesInput.value, 10);
+      if (!isNaN(newMinutes1) && newMinutes1 > 0) {
+          timer1Minutes = newMinutes1;
+          if (timer4) {
+              timer4.updateTotal(timer1Minutes * 60);
+          }
+      }
+      let newMinutes2 = parseInt(timer2MinutesInput.value, 10);
+      if (!isNaN(newMinutes2) && newMinutes2 > 0) {
+          timer2Minutes = newMinutes2;
+          if (timer5) {
+              timer5.updateTotal(timer2Minutes * 60);
+          }
+      }
+  }
+
+  // === preload sounds ===
+  const countBeep = document.getElementById("countBeep");
+  const countEnd  = document.getElementById("countEnd");
+  const timerTick = document.getElementById("timerTick");
+  const timesup = document.getElementById("timesup");
+  const audioToggle = document.getElementById("audio-toggle");
+  [countBeep, countEnd, timerTick, timesup].forEach(a => a.load());
+  const playSound = a => { if(audioToggle.checked) { a.currentTime = 0; a.play().catch(()=>{}); } };
+
+  function audioReady(audio) {
+    if (!audioToggle.checked) return Promise.resolve();
+    return new Promise(resolve => {
+        if (audio.readyState >= 4) {
+            resolve();
+        } else {
+            audio.addEventListener('canplaythrough', resolve, { once: true });
+        }
     });
-  </script>
+  }
+
+  function saveAudioSetting() {
+    setCookie('audioEnabled', audioToggle.checked, 365);
+  }
+
+  function loadAudioSetting() {
+    const audioEnabled = getCookie('audioEnabled');
+    if (audioEnabled !== null) audioToggle.checked = (audioEnabled === 'true');
+  }
+  audioToggle.addEventListener('change', saveAudioSetting);
+
+  // === slide switching ===
+  function showSlide(i) {
+    if (busy || i === activeIndex || i < 0 || i >= slides.length) return;
+    busy = true;
+    const from = slides[activeIndex];
+    from.classList.remove("active"); from.classList.add("exit");
+    if (activeIndex === 3) resetSlide3();
+    const next = slides[i];
+    next.classList.add("active");
+    setTimeout(() => { from.classList.remove("exit"); activeIndex = i; busy = false; }, 800);
+    if (i === 0) {
+      document.body.classList.remove('hide-cursor');
+    } else {
+      document.body.classList.add('hide-cursor');
+    }
+  }
+
+  // === slide 3 countdown ===
+  let countdownRunning = false;
+  async function startCountdown(slide) {
+    if (activeIndex !== 3 || countdownRunning) return;
+    
+    await Promise.all([audioReady(countBeep), audioReady(countEnd)]);
+
+    countdownRunning = true;
+    const title = document.getElementById("slide3Title");
+    title.classList.add("hidden");
+    const c = document.createElement("div"); c.className = "countdown";
+    const circle = document.createElement("div"); circle.className = "circle";
+    let count = 3; circle.textContent = count; c.appendChild(circle); slide.appendChild(c);
+
+    c.style.opacity = "0"; c.style.filter = "blur(30px)";
+    requestAnimationFrame(()=>{ c.style.opacity = "1"; c.style.filter = "blur(0)"; });
+
+    setTimeout(()=>{
+      playSound(countBeep);
+      const interval = setInterval(()=>{
+        count--;
+        if(count>0){ circle.textContent = count; playSound(countBeep); }
+        else if(count===0){
+          circle.textContent = count;
+          slide.classList.toggle("switch");
+          circle.classList.add("inverted"); playSound(countEnd);
+        } else { clearInterval(interval); countdownRunning = false; }
+      }, COUNTDOWN_SPEED);
+    }, 1000);
+  }
+
+  function resetSlide3(){
+    countdownRunning=false;
+    const s=document.getElementById("slide-3");
+    s.classList.remove("switch");
+    const t=document.getElementById("slide3Title");
+    t.classList.remove("hidden");
+    const c=s.querySelector(".countdown");
+    if(c)c.remove();
+  }
+
+  // === timer factory ===
+  function createTimer(slideId, timerId, totalSeconds) {
+    const timerEl=document.getElementById(timerId);
+    const slideEl=document.getElementById(slideId);
+    let running=false, raf=null, startTimestamp=null, elapsed=0, pauseSoundTimeout = null;
+    let overlayActive=false, overlay=null, finished=false;
+
+    const setNormal = ()=> timerEl.style.color="var(--text)";
+    const setRed    = ()=> timerEl.style.color="var(--accent)";
+
+    const fmt=sec=>{
+      sec=Math.max(sec,0);
+      const m=Math.floor(sec/60),s=Math.floor(sec%60);
+      return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    };
+
+    function renderDigits(t){
+      timerEl.innerHTML="";
+      for(const ch of t){
+        const d=document.createElement("div");d.className="digit";
+        const p=document.createElement("div");p.className="prev";
+        const n=document.createElement("div");n.className="next";
+        p.textContent=n.textContent=ch;d.append(p,n);timerEl.appendChild(d);
+      }
+    }
+
+    function updateDisplay(o,n){
+      const ds=timerEl.children;
+      for(let i=0;i<ds.length;i++){
+        const d=ds[i],p=d.querySelector(".prev"),x=d.querySelector(".next");
+        if(o[i]!==n[i]){
+          x.textContent=n[i];
+          d.classList.add("anim");
+          setTimeout(()=>{p.textContent=n[i];d.classList.remove("anim");},400);
+        }
+      }
+    }
+
+    function loop(now){
+      if(!running)return;
+      const ce=(now-startTimestamp)/1000;
+      const rem=Math.max(totalSeconds-ce,0);
+      const o=fmt(Math.ceil(totalSeconds-elapsed));
+      const n=fmt(Math.ceil(rem));
+      if(o!==n){updateDisplay(o,n);playSound(timerTick);}
+      elapsed=ce;
+
+      if(rem<=0 && !finished){
+        finished=true;
+        running=false;
+        timerEl.classList.add("paused");
+        setRed();
+        playSound(timesup);
+        return;
+      }
+      raf=requestAnimationFrame(loop);
+    }
+
+    function start(){
+      if(running||overlayActive||countdownRunning)return;
+      if (pauseSoundTimeout) {
+        clearTimeout(pauseSoundTimeout);
+        pauseSoundTimeout = null;
+        timesup.pause();
+        timesup.currentTime = 0;
+      }
+      finished=false;
+      setNormal();
+      timerEl.classList.remove("paused");
+      running=true;
+      startTimestamp=performance.now()-elapsed*1000;
+      raf=requestAnimationFrame(loop);
+    }
+
+    function pause(){
+      if(!running)return;
+      running=false;
+      if(raf)cancelAnimationFrame(raf);
+      timerEl.classList.add("paused");
+      setRed();
+      playSound(timesup);
+      pauseSoundTimeout = setTimeout(() => {
+        timesup.pause();
+        timesup.currentTime = 0;
+      }, 5000);
+    }
+
+    function reset(){
+      if(resetting) return;
+      if(raf)cancelAnimationFrame(raf);
+      running=false;
+      finished=false;
+      resetting = true;
+      timerEl.classList.add("paused");
+      timerEl.classList.add("resetting");
+      setTimeout(()=>{
+        elapsed=0;
+        renderDigits(fmt(totalSeconds));
+        timerEl.classList.remove("resetting");
+        setRed();
+        resetting = false;
+      },600);
+    }
+    
+    function updateTotal(newTotalSeconds) {
+        if (newTotalSeconds === totalSeconds) return;
+        totalSeconds = newTotalSeconds;
+        reset();
+    }
+
+    async function showOverlay(){
+      if(overlayActive||countdownRunning)return;
+
+      await Promise.all([audioReady(countBeep), audioReady(countEnd)]);
+
+      overlayActive=true;countdownRunning=true;
+      overlay=document.createElement("div");
+      overlay.className="timer-overlay";slideEl.appendChild(overlay);
+      const c=document.createElement("div");c.className="countdown";
+      const circle=document.createElement("div");circle.className="circle";
+      c.appendChild(circle);overlay.appendChild(c);
+      let count=3;circle.textContent=count;playSound(countBeep);
+
+      const i=setInterval(()=>{
+        count--;
+        if(count>0){circle.textContent=count;playSound(countBeep);}
+        else if(count===0){
+          circle.textContent=count;circle.classList.add("inverted");
+          playSound(countEnd);
+          overlay.style.transition="background-color .8s ease, opacity 1s ease, filter 1s ease";
+          overlay.style.background="rgba(237,55,55,0.7)";
+          overlay.style.backdropFilter="blur(20px)";
+          setTimeout(()=>{
+            overlay.style.filter="blur(30px)";
+            overlay.style.opacity="0";
+            overlay.style.background="rgba(12,26,34,0.3)";
+            setTimeout(()=>{removeOverlay();},1000);
+          },ZERO_HOLD_TIME);
+          clearInterval(i);
+        }
+      },COUNTDOWN_SPEED);
+    }
+
+    function removeOverlay(){
+      overlay?.remove();overlay=null;overlayActive=false;countdownRunning=false;
+    }
+
+    renderDigits(fmt(totalSeconds));
+    setRed();
+    return {start,pause,reset,showOverlay,removeOverlay,updateTotal,
+      get running(){return running;},get overlayActive(){return overlayActive;}};  
+  }
+
+  const timer4 = createTimer("slide-4","timer",timer1Minutes * 60);
+  const slide5=document.getElementById("slide-5");
+  slide5.innerHTML=`
+    <div class="timer-with-photo-container">
+        <img src="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/761a9da78b14f5bafe56827eaed0f8e0d54bead8/assets/ug%20ds%20logo%20svg.svg" alt="UGDS Logo" class="timer-top-image">
+        <div class="timer" id="timer2"></div>
+    </div>
+  `;
+  const timer5=createTimer("slide-5","timer2",timer2Minutes * 60);
+
+  timer1MinutesInput.addEventListener('input', () => {
+      let value = parseInt(timer1MinutesInput.value, 10);
+      if (!isNaN(value) && value > 59) {
+          timer1MinutesInput.value = 59;
+      }
+      
+      let newMinutes = parseInt(timer1MinutesInput.value, 10);
+      if (!isNaN(newMinutes) && newMinutes > 0) {
+        timer1Minutes = newMinutes;
+        if (timer4) {
+            timer4.updateTotal(timer1Minutes * 60);
+        }
+      }
+      saveSettings();
+  });
+
+  timer1MinutesInput.addEventListener('blur', () => {
+      let value = parseInt(timer1MinutesInput.value, 10);
+      if (isNaN(value) || value < 1) {
+          timer1MinutesInput.value = 1;
+          timer1Minutes = 1;
+          if (timer4) {
+              timer4.updateTotal(timer1Minutes * 60);
+          }
+      }
+      saveSettings();
+  });
+
+  timer2MinutesInput.addEventListener('input', () => {
+      let value = parseInt(timer2MinutesInput.value, 10);
+      if (!isNaN(value) && value > 59) {
+          timer2MinutesInput.value = 59;
+      }
+      
+      let newMinutes = parseInt(timer2MinutesInput.value, 10);
+      if (!isNaN(newMinutes) && newMinutes > 0) {
+        timer2Minutes = newMinutes;
+        if (timer5) {
+            timer5.updateTotal(timer2Minutes * 60);
+        }
+      }
+      saveSettings();
+  });
+
+  timer2MinutesInput.addEventListener('blur', () => {
+      let value = parseInt(timer2MinutesInput.value, 10);
+      if (isNaN(value) || value < 1) {
+          timer2MinutesInput.value = 1;
+          timer2Minutes = 1;
+          if (timer5) {
+              timer5.updateTotal(timer2Minutes * 60);
+          }
+      }
+      saveSettings();
+  });
+
+  // === Initial Load ===
+  loadSettings();
+  loadAudioSetting();
+
+  document.getElementById('reset-settings-btn').addEventListener('click', () => {
+    const defaultTimer1 = 20;
+    const defaultTimer2 = 10;
+
+    // Update input fields
+    timer1MinutesInput.value = defaultTimer1;
+    timer2MinutesInput.value = defaultTimer2;
+
+    // Update timer variables
+    timer1Minutes = defaultTimer1;
+    timer2Minutes = defaultTimer2;
+
+    // Update actual timers
+    if (timer4) {
+        timer4.updateTotal(timer1Minutes * 60);
+    }
+    if (timer5) {
+        timer5.updateTotal(timer2Minutes * 60);
+    }
+    saveSettings();
+  });
+
+  function currentTimer(){
+    if(activeIndex===4)return timer4;
+    if(activeIndex===5)return timer5;
+    return null;
+  }
+
+  window.addEventListener("keydown",e=>{
+    const k=e.key;
+
+    if (e.target.tagName.toLowerCase() === 'input') {
+        return;
+    }
+
+    if (k === 'Escape') {
+        const t = currentTimer();
+        if (t) {
+            t.reset();
+        }
+        showSlide(0);
+        return;
+    }
+
+    if (k === 'Enter' && activeIndex === 0) {
+        showSlide(1);
+        return;
+    }
+
+    if (k === 'Enter' && activeIndex === 0) {
+        showSlide(1);
+        return;
+    }
+
+    if(k.toLowerCase()==="r"){const t=currentTimer();if(t)t.reset();return;}
+    if(countdownRunning)return;
+    if(/^[1-6]$/.test(k)){
+        const t = currentTimer();
+        if (t && t.running) return;
+        showSlide(parseInt(k));
+        return;
+    }
+
+    if(k===" "){
+      const t=currentTimer();if(!t)return;
+      if(t.running)t.pause();else t.start();
+      return;
+    }
+
+    if(k==="Enter"){
+      if (activeIndex === 3) {
+        startCountdown(slides[3]);
+        return;
+      }
+      const t=currentTimer();if(!t)return;
+      if(t.overlayActive)t.removeOverlay();else t.showOverlay();
+      return;
+    }
+  });
+
+  let startX=0,startY=0;
+  window.addEventListener("touchstart",e=>{
+    const t=e.touches[0];startX=t.clientX;startY=t.clientY;
+  },{passive:true});
+  window.addEventListener("touchend",e=>{
+    if(countdownRunning || activeIndex === 0)return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX,dy=t.clientY-startY;
+    const absX=Math.abs(dx),absY=Math.abs(dy);
+    if(absX>50&&absX>absY){
+      const timer = currentTimer();
+      if (timer && timer.running) return;
+      if(dx>0)showSlide(activeIndex-1);else showSlide(activeIndex+1);
+    }else if(absY>50&&absY>absX){
+      const timer=currentTimer();
+      if(!timer){if(activeIndex===3)startCountdown(document.getElementById("slide-3"));return;}
+      if(dy>0){if(timer.running)timer.pause();else timer.start();}
+      else{if(!timer.overlayActive)timer.showOverlay();}
+    }
+  },{passive:true});
+})();
+</script>
+
+
+</body>
+</html>
+  // === Initial Load ===
+  loadSettings();
+  loadAudioSetting();
+
+  document.getElementById('reset-settings-btn').addEventListener('click', () => {
+    timer1MinutesInput.value = 20;
+    timer1TestToggle.checked = false;
+    timer2MinutesInput.value = 10;
+    timer2TestToggle.checked = false;
+    updateTimer1FromSettings();
+    updateTimer2FromSettings();
+    const defaultTimer1 = 20;
+    const defaultTimer2 = 10;
+
+    // Update input fields
+    timer1MinutesInput.value = defaultTimer1;
+    timer2MinutesInput.value = defaultTimer2;
+
+    // Update timer variables
+    timer1Minutes = defaultTimer1;
+    timer2Minutes = defaultTimer2;
+
+    // Update actual timers
+    if (timer4) {
+        timer4.updateTotal(timer1Minutes * 60);
+    }
+    if (timer5) {
+        timer5.updateTotal(timer2Minutes * 60);
+    }
+    saveSettings();
+  });
+
+  function currentTimer(){
+    if(activeIndex===4)return timer4;
+    if(activeIndex===5)return timer5;
+    return null;
+  }
+
+  window.addEventListener("keydown",e=>{
+    const k=e.key;
+
+    if (e.target.tagName.toLowerCase() === 'input') {
+        return;
+    }
+
+    if (k === 'Escape') {
+        showSlide(0); // showSlide(0) now handles resetting the timer
+        const t = currentTimer();
+        if (t) {
+            t.reset();
+        }
+        showSlide(0);
+        return;
+    }
+
+    if (k === 'Enter' && activeIndex === 0) {
+        showSlide(1);
+        return;
+    }
+
+    if (k === 'Enter' && activeIndex === 0) {
+        showSlide(1);
+        return;
+    }
+
+    if(k.toLowerCase()==="r"){const t=currentTimer();if(t)t.reset();return;}
+    if(countdownRunning)return;
+    if(/^[1-6]$/.test(k)){
+        const t = currentTimer();
+        if (t && t.running) return;
+        showSlide(parseInt(k));
+        return;
+    }
+
+    if(k===" "){
+      const t=currentTimer();if(!t)return;
+      if(t.running)t.pause();else t.start();
+      return;
+    }
+
+    if(k==="Enter"){
+      if (activeIndex === 3) {
+        startCountdown(slides[3]);
+        return;
+      }
+      const t=currentTimer();if(!t)return;
+      if(t.overlayActive)t.removeOverlay();else t.showOverlay();
+      return;
+    }
+  });
+
+  let startX=0,startY=0;
+  window.addEventListener("touchstart",e=>{
+    const t=e.touches[0];startX=t.clientX;startY=t.clientY;
+  },{passive:true});
+  window.addEventListener("touchend",e=>{
+    if(countdownRunning || activeIndex === 0)return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX,dy=t.clientY-startY;
+    const absX=Math.abs(dx),absY=Math.abs(dy);
+    if(absX>50&&absX>absY){
+      const timer = currentTimer();
+      if (timer && timer.running) return;
+      if(dx>0)showSlide(activeIndex-1);else showSlide(activeIndex+1);
+    }else if(absY>50&&absY>absX){
+      const timer=currentTimer();
+      if(!timer){if(activeIndex===3)startCountdown(document.getElementById("slide-3"));return;}
+      if(dy>0){if(timer.running)timer.pause();else timer.start();}
+      else{if(!timer.overlayActive)timer.showOverlay();}
+    }
+  },{passive:true});
+})();
+</script>
+
 
 </body>
 </html>
