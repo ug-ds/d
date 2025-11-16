@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>DS 1 vs N</title>
-<link rel="icon" type="image/x-icon" href="assets/ug%20ds%20logo%20favicon.png">
+<link rel="icon" type="image/x-icon" href="/assets/ug ds logo favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -743,61 +743,36 @@ input:checked + .slider:before { transform: translateX(26px); }
   `;
   const timer5=createTimer("slide-5","timer2",timer2Minutes * 60);
 
-  timer1MinutesInput.addEventListener('input', () => {
-      let value = parseInt(timer1MinutesInput.value, 10);
-      if (!isNaN(value) && value > 59) {
-          timer1MinutesInput.value = 59;
-      }
-      
-      let newMinutes = parseInt(timer1MinutesInput.value, 10);
-      if (!isNaN(newMinutes) && newMinutes > 0) {
-        timer1Minutes = newMinutes;
-        if (timer4) {
-            timer4.updateTotal(timer1Minutes * 60);
+  function setupTimerInputValidation(inputEl, timerVarName, timerInstance) {
+    const updateTimer = () => {
+        let value = parseInt(inputEl.value, 10);
+
+        if (isNaN(value) || value < 1) {
+            value = 1;
+        } else if (value > 59) {
+            value = 59;
         }
-      }
-      saveSettings();
-  });
+        inputEl.value = value;
 
-  timer1MinutesInput.addEventListener('blur', () => {
-      let value = parseInt(timer1MinutesInput.value, 10);
-      if (isNaN(value) || value < 1) {
-          timer1MinutesInput.value = 1;
-          timer1Minutes = 1;
-          if (timer4) {
-              timer4.updateTotal(timer1Minutes * 60);
-          }
-      }
-      saveSettings();
-  });
-
-  timer2MinutesInput.addEventListener('input', () => {
-      let value = parseInt(timer2MinutesInput.value, 10);
-      if (!isNaN(value) && value > 59) {
-          timer2MinutesInput.value = 59;
-      }
-      
-      let newMinutes = parseInt(timer2MinutesInput.value, 10);
-      if (!isNaN(newMinutes) && newMinutes > 0) {
-        timer2Minutes = newMinutes;
-        if (timer5) {
-            timer5.updateTotal(timer2Minutes * 60);
+        if (timerVarName === 'timer1Minutes') {
+            timer1Minutes = value;
+        } else if (timerVarName === 'timer2Minutes') {
+            timer2Minutes = value;
         }
-      }
-      saveSettings();
-  });
 
-  timer2MinutesInput.addEventListener('blur', () => {
-      let value = parseInt(timer2MinutesInput.value, 10);
-      if (isNaN(value) || value < 1) {
-          timer2MinutesInput.value = 1;
-          timer2Minutes = 1;
-          if (timer5) {
-              timer5.updateTotal(timer2Minutes * 60);
-          }
-      }
-      saveSettings();
-  });
+        if (timerInstance) {
+            timerInstance.updateTotal(value * 60);
+        }
+        saveSettings();
+    };
+
+    inputEl.addEventListener('input', updateTimer);
+    inputEl.addEventListener('blur', updateTimer);
+  }
+
+  setupTimerInputValidation(timer1MinutesInput, 'timer1Minutes', timer4);
+  setupTimerInputValidation(timer2MinutesInput, 'timer2Minutes', timer5);
+
 
   // === Initial Load ===
   loadSettings();
