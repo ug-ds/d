@@ -31,6 +31,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   position:absolute;inset:0;display:grid;place-items:center;
   opacity:0;transform:translateY(60px);filter:blur(var(--blur));overflow: hidden;
   transition:opacity var(--transition),transform var(--transition),filter var(--transition);
+  transition:opacity var(--transition),transform var(--transition),filter var(--transition), background-color 0.2s ease;
   pointer-events: none;
 }
 .slide.active{opacity:1;transform:translateY(0);filter:none;overflow: hidden; pointer-events: auto;}
@@ -74,6 +75,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   letter-spacing: .03em;position:relative;
   display:flex;gap:0.02em;color:var(--text);
   transition:color .3s ease, filter .6s ease, opacity .6s ease;
+  transition:color 0.2s ease, filter .6s ease, opacity .6s ease;
 }
 .timer.paused{color:var(--accent);}
 .timer.resetting{
@@ -92,6 +94,13 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
 @keyframes fadeOut{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-40%);filter:blur(10px);} }
 @keyframes fadeIn{0%{opacity:0;transform:translateY(40%);filter:blur(10px);}100%{opacity:1;transform:translateY(0);filter:none;}}
 
+/* === Timer End State === */
+#slide-5.timer-ended {
+  background-color: var(--accent);
+}
+#slide-5.timer-ended .timer.paused {
+  color: var(--bg); /* Change text color for contrast */
+}
 /* === Slide 5 (QR) === */
 .qr-wrap {
   display: grid;
@@ -198,6 +207,20 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   color: #fff;
   font-family: "Noto Sans Georgian", sans-serif;
 }
+.setting-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: flex-end;
+}
+.setting-horizontal .setting {
+  flex: 1;
+  margin-bottom: 0;
+}
+.setting-horizontal .setting label {
+  font-size: 1.2rem; /* Smaller label for sub-fields */
+}
+
 .resolution-text {
   font-size: clamp(100px, 8vmin, 120px);
   font-weight: 700;
@@ -243,6 +266,50 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
 .reset-button:hover {
   background-color: #c72a2a;
 }
+.setting.toggle {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 20px;
+}
+
+.setting.toggle label {
+  margin-bottom: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2a4458;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute; content: ""; height: 26px; width: 26px;
+  left: 4px; bottom: 4px; background-color: white;
+  transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(26px); }
 body.hide-cursor {
   cursor: none;
 }
@@ -312,8 +379,24 @@ body.hide-cursor {
         <input type="text" id="res3" value="R3">
       </div>
       <div class="setting">
-        <label for="timer-minutes">დრო (წთ)</label>
-        <input type="number" id="timer-minutes" value="5" min="1" max="59">
+        <label>დრო</label>
+        <div class="setting-horizontal">
+            <div class="setting">
+                <label for="timer-minutes">წუთი</label>
+                <input type="number" id="timer-minutes" value="5" min="0" max="59">
+            </div>
+            <div class="setting">
+                <label for="timer-seconds">წამი</label>
+                <input type="number" id="timer-seconds" value="0" min="0" max="59">
+            </div>
+        </div>
+    </div>
+      <div class="setting toggle">
+        <label for="audio-toggle">Enable Audio</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="audio-toggle" checked>
+          <span class="slider"></span>
+        </label>
       </div>
       <button id="reset-settings-btn" class="reset-button">დაბრუნება</button>
     </div>
@@ -358,7 +441,8 @@ body.hide-cursor {
 </div>
 
 <!-- preload audio elements -->
-<audio id="timerTick" src="https://github.com/David3dArt/UGSTUFF/raw/refs/heads/main/sfx/timer%20tick.mp3" preload="auto"></audio>
+<audio id="timerTick" src="/sfx/timer%20tick.mp3" preload="auto"></audio>
+<audio id="timesup" src="/sfx/times_up.mp3" preload="auto"></audio>
 
 <script>
 (function(){
@@ -392,11 +476,23 @@ body.hide-cursor {
   const res2Input = document.getElementById('res2');
   const res3Input = document.getElementById('res3');
   const timerMinutesInput = document.getElementById('timer-minutes');
+  const timerSecondsInput = document.getElementById('timer-seconds');
 
   const resDisplay1 = document.getElementById('res-display-1');
   const resDisplay2 = document.getElementById('res-display-2');
   const resDisplay3 = document.getElementById('res-display-3');
   const resetButton = document.getElementById('reset-settings-btn');
+  const audioToggle = document.getElementById("audio-toggle");
+
+  function saveAudioSetting() {
+    setCookie('audioEnabled', audioToggle.checked, 365);
+  }
+
+  function loadAudioSetting() {
+    const audioEnabled = getCookie('audioEnabled');
+    if (audioEnabled !== null) audioToggle.checked = (audioEnabled === 'true');
+  }
+  audioToggle.addEventListener('change', saveAudioSetting);
 
   // === Settings functions ===
   function saveSettings() {
@@ -404,6 +500,7 @@ body.hide-cursor {
       setCookie('res2', res2Input.value, 365);
       setCookie('res3', res3Input.value, 365);
       setCookie('timerMinutes', timerMinutesInput.value, 365);
+      setCookie('timerSeconds', timerSecondsInput.value, 365);
   }
 
   function loadSettings() {
@@ -418,15 +515,14 @@ body.hide-cursor {
 
       const timerMinutes = getCookie('timerMinutes');
       if (timerMinutes) timerMinutesInput.value = timerMinutes;
+
+      const timerSeconds = getCookie('timerSeconds');
+      if (timerSeconds) timerSecondsInput.value = timerSeconds;
       
       updateResolutionDisplays();
-      
-      let newMinutes = parseInt(timerMinutesInput.value, 10);
-      if (!isNaN(newMinutes) && newMinutes > 0) {
-          timer1Minutes = newMinutes;
-          if (timer4) {
-              timer4.updateTotal(timer1Minutes * 60);
-          }
+      if (timer4) {
+          const totalSeconds = (parseInt(timerMinutesInput.value, 10) || 0) * 60 + (parseInt(timerSecondsInput.value, 10) || 0);
+          timer4.updateTotal(totalSeconds);
       }
   }
 
@@ -435,18 +531,16 @@ body.hide-cursor {
     res2Input.value = "R2";
     res3Input.value = "R3";
     timerMinutesInput.value = "5";
+    timerSecondsInput.value = "0";
 
     // update displays and save to cookies
     updateResolutionDisplays();
     saveSettings();
 
     // update timer
-    let newMinutes = parseInt(timerMinutesInput.value, 10);
-    if (!isNaN(newMinutes) && newMinutes > 0) {
-        timer1Minutes = newMinutes;
-        if (timer4) {
-            timer4.updateTotal(timer1Minutes * 60);
-        }
+    if (timer4) {
+        const totalSeconds = (parseInt(timerMinutesInput.value, 10) || 0) * 60 + (parseInt(timerSecondsInput.value, 10) || 0);
+        timer4.updateTotal(totalSeconds);
     }
   }
 
@@ -463,14 +557,12 @@ body.hide-cursor {
   res3Input.addEventListener('input', () => { updateResolutionDisplays(); saveSettings(); });
   resetButton.addEventListener('click', resetSettings);
   
-  /* === 🔧 easy timer setup === */
-  let timer1Minutes = parseInt(timerMinutesInput.value, 10);
-  const TIMER2_MINUTES = 10; // change this to adjust second timer
 
   // === preload sounds ===
   const timerTick = document.getElementById("timerTick");
-  timerTick.load();
-  const playSound = a => { a.currentTime = 0; a.play().catch(()=>{}); };
+  const timesup = document.getElementById("timesup");
+  [timerTick, timesup].forEach(a => a.load());
+  const playSound = a => { if(audioToggle.checked) { a.currentTime = 0; a.play().catch(e => console.error("Audio play failed:", e)); } };
 
   // === slide switching ===
   function showSlide(i) {
@@ -483,6 +575,10 @@ body.hide-cursor {
     setTimeout(() => { from.classList.remove("exit"); activeIndex = i; busy = false; }, 800);
     if (i === 0) {
       document.body.classList.remove('hide-cursor');
+      const t = currentTimer();
+      if (t) {
+        t.reset();
+      }
     } else {
       document.body.classList.add('hide-cursor');
     }
@@ -493,12 +589,9 @@ body.hide-cursor {
     const timerEl=document.getElementById(timerId);
     if (!timerEl) return null;
     const slideEl=document.getElementById(slideId);
-    let running=false, raf=null, startTimestamp=null, elapsed=0;
+    let running=false, raf=null, startTimestamp=null, elapsed=0, lastDisplayedSecond = -1;
     let finished=false;
-
-    const setNormal = ()=> timerEl.style.color="var(--text)";
-    const setRed    = ()=> timerEl.style.color="var(--accent)";
-
+    
     const fmt=sec=>{
       sec=Math.max(sec,0);
       const m=Math.floor(sec/60),s=Math.floor(sec%60);
@@ -540,7 +633,8 @@ body.hide-cursor {
         finished=true;
         running=false;
         timerEl.classList.add("paused");
-        setRed();
+        slideEl.classList.add("timer-ended");
+        playSound(timesup);
         return;
       }
       raf=requestAnimationFrame(loop);
@@ -549,7 +643,6 @@ body.hide-cursor {
     function start(){
       if(running || resetting)return;
       finished=false;
-      setNormal();
       timerEl.classList.remove("paused");
       running=true;
       startTimestamp=performance.now()-elapsed*1000;
@@ -561,7 +654,7 @@ body.hide-cursor {
       running=false;
       if(raf)cancelAnimationFrame(raf);
       timerEl.classList.add("paused");
-      setRed();
+      // No sound should play on pause
     }
 
     function reset(){
@@ -570,60 +663,63 @@ body.hide-cursor {
       running=false;
       finished=false;
       resetting = true;
+      slideEl.classList.remove("timer-ended");
       timerEl.classList.add("paused");
       timerEl.classList.add("resetting");
       setTimeout(()=>{
         elapsed=0;
         renderDigits(fmt(totalSeconds));
         timerEl.classList.remove("resetting");
-        setRed();
         resetting = false;
       },600);
     }
     
     function updateTotal(newTotalSeconds) {
         totalSeconds = newTotalSeconds;
+        finished = false; // Reset finished state when time is updated
         reset();
     }
 
     renderDigits(fmt(totalSeconds));
-    setRed();
+    timerEl.classList.add("paused");
     return {start,pause,reset,updateTotal,
       get running(){return running;}};  
   }
 
-  let timer4 = createTimer("slide-5","timer",timer1Minutes * 60);
+  let initialTotalSeconds = (parseInt(timerMinutesInput.value, 10) || 0) * 60 + (parseInt(timerSecondsInput.value, 10) || 0);
+  let timer4 = createTimer("slide-5","timer", initialTotalSeconds);
   
-  timerMinutesInput.addEventListener('input', () => {
-      let value = parseInt(timerMinutesInput.value, 10);
-      if (!isNaN(value) && value > 59) {
-          timerMinutesInput.value = 59;
-      }
-      
-      let newMinutes = parseInt(timerMinutesInput.value, 10);
-      if (!isNaN(newMinutes) && newMinutes > 0) {
-        timer1Minutes = newMinutes;
-        if (timer4) {
-            timer4.updateTotal(timer1Minutes * 60);
-        }
-      }
-      saveSettings();
-  });
+  function handleTimeInputChange(input, max) {
+    let value = parseInt(input.value, 10);
+    if (!isNaN(value) && value > max) {
+        input.value = max;
+    }
+    if (!isNaN(value) && value < 0) {
+        input.value = 0;
+    }
+    
+    const totalSeconds = (parseInt(timerMinutesInput.value, 10) || 0) * 60 + (parseInt(timerSecondsInput.value, 10) || 0);
+    if (timer4) {
+        timer4.updateTotal(totalSeconds);
+    }
+    saveSettings();
+  }
 
-  timerMinutesInput.addEventListener('blur', () => {
-      let value = parseInt(timerMinutesInput.value, 10);
-      if (isNaN(value) || value < 1) {
-          timerMinutesInput.value = 1;
-          timer1Minutes = 1;
-          if (timer4) {
-              timer4.updateTotal(timer1Minutes * 60);
-          }
-      }
-      saveSettings();
-  });
+  function handleTimeInputBlur(input) {
+    if (input.value === '' || parseInt(input.value, 10) < 0) {
+        input.value = 0;
+    }
+    handleTimeInputChange(input, 59);
+  }
+
+  timerMinutesInput.addEventListener('input', () => handleTimeInputChange(timerMinutesInput, 59));
+  timerSecondsInput.addEventListener('input', () => handleTimeInputChange(timerSecondsInput, 59));
+  timerMinutesInput.addEventListener('blur', () => handleTimeInputBlur(timerMinutesInput));
+  timerSecondsInput.addEventListener('blur', () => handleTimeInputBlur(timerSecondsInput));
 
   // === Initial Load ===
   loadSettings();
+  loadAudioSetting();
 
 
 
