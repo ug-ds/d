@@ -760,7 +760,6 @@ body.hide-cursor {
           connectionStatus.textContent = 'Remote Connected!';
           connectionStatus.style.color = 'lightgreen';
           console.log('Connected to remote: ' + conn.peer);
-          conn.send({ type: 'presentation-id', id: '2vs2' });
 
           conn.on('data', handleRemoteCommand);
           conn.on('close', () => {
