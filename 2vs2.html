@@ -425,6 +425,15 @@ body.hide-cursor {
       </div>
       <button id="reset-settings-btn" class="reset-button">დაბრუნება</button>
     </div>
+    <div id="remote-control-container" style="position: absolute; bottom: 2rem; left: 2rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+      <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--accent);">Remote Code</h3>
+      <div id="peer-id-display" style="font-family: 'Saira', sans-serif; font-size: 2.5rem; letter-spacing: 3px; color: #fff;">
+        ------
+      </div>
+      <div id="connection-status" style="margin-top: 0.5rem; color: #999; height: 1em;">
+        Waiting for connection...
+      </div>
+    </div>
     <div class="start-prompt">press enter to start</div>
   </section>
 
@@ -459,6 +468,7 @@ body.hide-cursor {
 <!-- preload audio elements -->
 <audio id="timerTick" src="/sfx/timer%20tick.mp3" preload="auto"></audio>
 <audio id="timesup" src="/sfx/times_up.mp3" preload="auto"></audio>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
 <script>
 (function(){
@@ -723,12 +733,74 @@ body.hide-cursor {
   loadSettings();
   loadAudioSetting();
 
+  // === Remote Control (PeerJS) ===
+  const PEER_PREFIX = 'ugds-slides-';
+  let peer = null;
+  let conn = null;
+  const peerIdDisplay = document.getElementById('peer-id-display');
+  const connectionStatus = document.getElementById('connection-status');
+
+  function initializePeer() {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const peerId = PEER_PREFIX + code;
+      peer = new Peer(peerId);
+
+      peer.on('open', id => {
+          console.log('My peer ID is: ' + id);
+          peerIdDisplay.textContent = code;
+      });
+
+      peer.on('connection', newConn => {
+          if (conn && conn.open) {
+              console.log('Rejecting new connection, already connected.');
+              newConn.close();
+              return;
+          }
+          conn = newConn;
+          connectionStatus.textContent = 'Remote Connected!';
+          connectionStatus.style.color = 'lightgreen';
+          console.log('Connected to remote: ' + conn.peer);
+
+          conn.on('data', handleRemoteCommand);
+          conn.on('close', () => {
+              connectionStatus.textContent = 'Remote Disconnected';
+              connectionStatus.style.color = '#999';
+              conn = null;
+          });
+      });
+
+      peer.on('error', err => {
+          console.error('PeerJS error:', err);
+          peerIdDisplay.textContent = 'Error';
+          connectionStatus.textContent = err.type;
+      });
+  }
+
+  function handleRemoteCommand(data) {
+      console.log('Received command:', data);
+      const { command, param } = data;
+      const t = currentTimer();
+
+      switch (command) {
+          case 'showSlide':
+              showSlide(parseInt(param));
+              break;
+          case 'toggleTimer':
+              if (t) { if (t.running) t.pause(); else t.start(); }
+              break;
+          case 'resetTimer':
+              if (t) t.reset();
+              break;
+      }
+  }
 
 
   function currentTimer(){
     if(activeIndex===5)return timer4;
     return null;
   }
+
+  initializePeer();
 
   window.addEventListener("keydown",e=>{
     const k=e.key;

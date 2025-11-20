@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Slides Remote</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --bg: #0C1A22;
+            --accent: #ED3737;
+            --text: #fff;
+            --btn-bg: #1f2937;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        #connect-view {
+            text-align: center;
+        }
+        #connect-view h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        #code-input {
+            font-size: 2rem;
+            letter-spacing: 0.5em;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+            padding: 0.5rem;
+            background-color: var(--btn-bg);
+            border: 2px solid var(--accent);
+            color: var(--text);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+        #connect-btn {
+            font-size: 1.2rem;
+            padding: 0.8rem 2rem;
+            background-color: var(--accent);
+            color: var(--text);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 1rem;
+            color: var(--accent);
+            height: 1.2em;
+        }
+        #controls-view {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+            max-width: 400px;
+            max-height: 600px;
+            margin: auto;
+        }
+        .grid-btn {
+            background-color: var(--btn-bg);
+            color: var(--text);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .grid-btn:active {
+            background-color: var(--accent);
+        }
+        .grid-btn.span-3 {
+            grid-column: span 3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="connect-view">
+        <h1>Enter Connection Code</h1>
+        <input type="text" id="code-input" maxlength="6" inputmode="numeric" placeholder="______">
+        <button id="connect-btn">Connect</button>
+        <p id="status"></p>
+    </div>
+
+    <div id="controls-view">
+        <div class="button-grid">
+            <button class="grid-btn" data-command="showSlide" data-param="1">1</button>
+            <button class="grid-btn" data-command="showSlide" data-param="2">2</button>
+            <button class="grid-btn" data-command="showSlide" data-param="3">3</button>
+            <button class="grid-btn" data-command="showSlide" data-param="4">4</button>
+            <button class="grid-btn" data-command="showSlide" data-param="5">5</button>
+            <button class="grid-btn" data-command="showSlide" data-param="6">6</button>
+            <button class="grid-btn" data-command="showSlide" data-param="0">Home</button>
+            <button class="grid-btn" data-command="countdown">Countdown</button>
+            <button class="grid-btn" data-command="special" data-param="Enter">Special</button>
+            <button class="grid-btn span-3" data-command="toggleTimer">Play/Stop Timer</button>
+            <button class="grid-btn span-3" data-command="resetTimer">Reset Timer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const connectView = document.getElementById('connect-view');
+    const controlsView = document.getElementById('controls-view');
+    const codeInput = document.getElementById('code-input');
+    const connectBtn = document.getElementById('connect-btn');
+    const statusEl = document.getElementById('status');
+
+    let peer = null;
+    let conn = null;
+    const PEER_PREFIX = 'ugds-slides-';
+
+    function initializePeer() {
+        peer = new Peer();
+        peer.on('open', id => {
+            console.log('My peer ID is: ' + id);
+        });
+        peer.on('error', err => {
+            statusEl.textContent = `Error: ${err.type}`;
+            console.error(err);
+        });
+    }
+
+    function connectToPeer() {
+        const code = codeInput.value.trim();
+        if (code.length !== 6 || !peer) {
+            statusEl.textContent = 'Please enter a valid 6-digit code.';
+            return;
+        }
+
+        statusEl.textContent = 'Connecting...';
+        const peerId = PEER_PREFIX + code;
+        conn = peer.connect(peerId);
+
+        conn.on('open', () => {
+            statusEl.textContent = 'Connected!';
+            setTimeout(() => {
+                connectView.style.display = 'none';
+                controlsView.style.display = 'block';
+            }, 500);
+        });
+
+        conn.on('data', data => {
+            console.log('Received', data);
+        });
+
+        conn.on('close', () => {
+            statusEl.textContent = 'Connection closed. Please reconnect.';
+            connectView.style.display = 'block';
+            controlsView.style.display = 'none';
+        });
+
+        conn.on('error', err => {
+            statusEl.textContent = `Connection error.`;
+            console.error(err);
+        });
+    }
+
+    function sendCommand(command, param = null) {
+        if (conn && conn.open) {
+            const payload = { command };
+            if (param !== null) {
+                payload.param = param;
+            }
+            conn.send(payload);
+            console.log('Sent:', payload);
+        } else {
+            statusEl.textContent = 'Not connected.';
+            connectView.style.display = 'block';
+            controlsView.style.display = 'none';
+        }
+    }
+
+    connectBtn.addEventListener('click', connectToPeer);
+    codeInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            connectToPeer();
+        }
+    });
+
+    document.querySelectorAll('.grid-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const command = button.dataset.command;
+            const param = button.dataset.param;
+            sendCommand(command, param);
+        });
+    });
+
+    initializePeer();
+});
+</script>
+
+</body>
+</html>
