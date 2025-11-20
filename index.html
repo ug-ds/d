@@ -5,17 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UG Debating Society</title>
   <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/refs/heads/main/assets/ug%20ds%20logo%20favicon.png">
+  <meta name="description" content="საქართველოს უნივერსიტეტის დებატების კლუბის ოფიციალური ვებ-გვერდი. The official website for the University of Georgia (UG) Debating Society.">
+  <meta name="keywords" content="UG debating society, debating society, ug ds, ug, debating, debates, საქართველოს უნივერსიტეტის დებატების კლუბი, დებატები, კლუბი, დებატების კლუბი, საქართველოს უნივერსიტეტი, საჯარო დებატები">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,700,1,200" />
+  <style>
+    /* Apply Saira font only to Latin characters */
+    @font-face {
+      font-family: 'Saira';
+      src: local('Saira'), url('https://fonts.gstatic.com/s/saira/v14/mem-Ya2wxmKQyNFETZY.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  </style>
 
 
   <style>
     :root {
       --bg: #0C1A22;
       --accent: #ED3737;
+      --text-muted: #b0c4de;
       --text: #fff;
     }
 
@@ -25,8 +36,10 @@
       font-family: sans-serif;
       margin: 0;
       padding: 0;
+      scroll-behavior: smooth;
       font-family: "Noto Sans Georgian", sans-serif;
     }
+
 
     .navbar {
       padding: 0.1rem 1rem;
@@ -45,6 +58,87 @@
       height: 90px;
       display: block;
       transition: transform 0.2s ease;
+    }
+
+    main {
+      padding: 0;
+    }
+
+    .cover-container {
+      height: 60vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cover-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      position: absolute;
+      z-index: -1;
+      filter: blur(10px) brightness(1);
+      transform: scale(1.2);
+      opacity: 0;
+      animation: fadeInCover 1s ease-out forwards;
+      animation-delay: 0.2s;
+    }
+
+    @keyframes fadeInCover {
+      to {
+        filter: blur(0) brightness(1);
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page-intro {
+      text-align: center;
+      padding: 4rem 2rem;
+      background-color: #0f1e28;
+    }
+
+    .page-title {
+      font-family: "Noto Sans Georgian", "Saira", sans-serif; /* Saira for English, Noto for Georgian */
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      margin: 0 0 1rem 0;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out forwards;
+      animation-delay: 0.8s; /* Starts after cover image */
+    }
+
+    .page-description {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out forwards;
+      animation-delay: 1s; /* Starts after title */
+    }
+
+    .games-section {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: auto;
+      opacity: 0; /* Initially hidden for scroll animation */
+      transform: translateY(40px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
     }
 
     .gallery {
@@ -89,14 +183,14 @@
         font-size: 1.5rem;
         font-weight: bold;
         margin: 0 0 0.5rem 0;
-        color: var(--text);
+        color: var(--text-muted);
         font-family: "Saira", sans-serif;
         transition: color 0.2s ease;
     }
 
     .card-description {
         font-size: 1rem;
-        color: #b0c4de; /* A lighter, less prominent text color */
+        color: var(--text-muted);
         line-height: 1.4;
         margin: 0;
         flex-grow: 1;
@@ -132,12 +226,55 @@
       'GRAD' 200,
       'opsz' 24
     }
+
+    footer {
+      background-color: #081218;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 4rem;
+      border-top: 1px solid hsl(202, 38%, 20%);
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .social-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .social-link:hover {
+      color: var(--accent);
+    }
+
+    .footer-text {
+      color: #7a8f94;
+      font-size: 0.9rem;
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+      .cover-container {
+        height: 56.25vw; /* 16:9 Aspect Ratio */
+      }
+      .games-section, .gallery {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="https://ug-ds.github.io" class="logo-link">
+    <a href="index.html" class="logo-link">
       <img src="https://raw.githubusercontent.com/ug-ds/ug-ds.github.io/761a9da78b14f5bafe56827eaed0f8e0d54bead8/assets/ug%20ds%20logo%20svg.svg" alt="UGDS Logo" class="logo-img">
     </a>
     <a href="remote.html" class="remote-link" title="Open Remote Control" target="_blank">
@@ -146,8 +283,22 @@
   </nav>
 
   <main>
-    <div id="button-gallery" class="gallery">
-      <!-- Buttons will be inserted here by the script -->
+    <section class="cover-container">
+      <img src="assets/ug-ds-web-cover.png" alt="Debating event cover" class="cover-image">
+    </section>
+
+    <section class="page-intro">
+      <h1 class="page-title">საქართველოს უნივერსიტეტის დებატების კლუბი</h1>
+      <p class="page-description">
+        ჩვენი კლუბი არის ადგილი, სადაც სტუდენტებს შეუძლიათ განავითარონ კრიტიკული აზროვნება, საჯარო გამოსვლების უნარები და ჩაერთონ საინტერესო დისკუსიებში.
+      </p>
+    </section>
+
+    <div class="games-section">
+      <h2 class="page-title" style="text-align: center; margin-bottom: 3rem;">დებატების ფორმატები</h2>
+      <div id="button-gallery" class="gallery">
+        <!-- Buttons will be inserted here by the script -->
+      </div>
     </div>
   </main>
 
@@ -184,6 +335,40 @@
       gallery.appendChild(a);
     });
   </script>
+
+  <script>
+    // Scroll-triggered fade-in animation for the games section
+    document.addEventListener('DOMContentLoaded', () => {
+      const gamesSection = document.querySelector('.games-section');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target); // Stop observing once it's visible
+          }
+        });
+      }, {
+        threshold: 0.1 // Trigger when 10% of the element is visible
+      });
+
+      if (gamesSection) {
+        observer.observe(gamesSection);
+      }
+    });
+  </script>
+
+  <footer>
+    <div class="social-links">
+      <a href="https://www.facebook.com/people/UG-Debating-Society/61573906987205/" target="_blank" class="social-link">Facebook</a>
+      <a href="https://www.instagram.com/ug_d.s/" target="_blank" class="social-link">Instagram</a>
+      <a href="https://ug.edu.ge/" target="_blank" class="social-link">UG</a>
+    </div>
+    <p class="footer-text">
+      &copy; 2024 University of Georgia Debating Society. All rights reserved.
+    </p>
+  </footer>
 
 </body>
 </html>
