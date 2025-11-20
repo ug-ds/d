@@ -115,8 +115,7 @@
     </div>
 
     <div id="controls-view">
-        <!-- Layout for 1vsN -->
-        <div class="button-grid" id="grid-1vsN" style="display: none;">
+        <div class="button-grid">
             <button class="grid-btn" data-command="showSlide" data-param="1">1</button>
             <button class="grid-btn" data-command="showSlide" data-param="2">2</button>
             <button class="grid-btn" data-command="showSlide" data-param="3">3</button>
@@ -124,20 +123,8 @@
             <button class="grid-btn" data-command="showSlide" data-param="5">5</button>
             <button class="grid-btn" data-command="showSlide" data-param="6">6</button>
             <button class="grid-btn" data-command="showSlide" data-param="0">Home</button>
-            <button class="grid-btn" data-command="countdown">3-2-1</button>
+            <button class="grid-btn" data-command="countdown">Countdown</button>
             <button class="grid-btn" data-command="overlay">Overlay</button>
-            <button class="grid-btn span-3" data-command="toggleTimer">Play/Stop Timer</button>
-            <button class="grid-btn span-3" data-command="resetTimer">Reset Timer</button>
-        </div>
-        <!-- Layout for 2vs2 -->
-        <div class="button-grid" id="grid-2vs2" style="display: none;">
-            <button class="grid-btn" data-command="showSlide" data-param="1">1</button>
-            <button class="grid-btn" data-command="showSlide" data-param="2">2</button>
-            <button class="grid-btn" data-command="showSlide" data-param="3">3</button>
-            <button class="grid-btn" data-command="showSlide" data-param="4">4</button>
-            <button class="grid-btn" data-command="showSlide" data-param="5">5</button>
-            <button class="grid-btn" data-command="showSlide" data-param="6">6</button>
-            <button class="grid-btn span-3" data-command="showSlide" data-param="0">Home</button>
             <button class="grid-btn span-3" data-command="toggleTimer">Play/Stop Timer</button>
             <button class="grid-btn span-3" data-command="resetTimer">Reset Timer</button>
         </div>
@@ -151,8 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const codeInput = document.getElementById('code-input');
     const connectBtn = document.getElementById('connect-btn');
     const statusEl = document.getElementById('status');
-    const grid1vsN = document.getElementById('grid-1vsN');
-    const grid2vs2 = document.getElementById('grid-2vs2');
 
     let peer = null;
     let conn = null;
@@ -181,26 +166,15 @@ document.addEventListener('DOMContentLoaded', () => {
         conn = peer.connect(peerId);
 
         conn.on('open', () => {
-            // Connection is open, but wait for the presentation to identify itself.
-            statusEl.textContent = 'Handshaking...';
+            statusEl.textContent = 'Connected!';
+            setTimeout(() => {
+                connectView.style.display = 'none';
+                controlsView.style.display = 'block';
+            }, 500);
         });
 
         conn.on('data', data => {
             console.log('Received', data);
-            if (data.type === 'presentation-id') {
-                statusEl.textContent = 'Connected!';
-                
-                // Hide all grids first
-                grid1vsN.style.display = 'none';
-                grid2vs2.style.display = 'none';
-
-                // Show the correct grid
-                if (data.id === '1vsN') grid1vsN.style.display = 'grid';
-                else if (data.id === '2vs2') grid2vs2.style.display = 'grid';
-
-                connectView.style.display = 'none';
-                controlsView.style.display = 'block';
-            }
         });
 
         conn.on('close', () => {
