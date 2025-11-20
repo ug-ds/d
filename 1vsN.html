@@ -244,8 +244,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
 .version-display {
     position: absolute;
     bottom: 0.5rem;
-    right: 2rem;
-    font-size: 1.2rem;
+    right: 1.5rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.2);
     font-family: monospace;
 }
@@ -385,7 +385,7 @@ input:checked + .slider:before { transform: translateX(26px); }
       <button id="reset-settings-btn" class="reset-button">Reset to Default</button>
     </div>
     <div class="start-prompt">press enter to start</div>
-    <div class="version-display">v1.2.0</div>
+    <div class="version-display" id="version-display"></div>
     <div id="remote-control-container" style="position: absolute; bottom: 2rem; left: 2rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center; z-index: 20;">
       <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--accent);">Remote Code</h3>
       <div id="peer-id-display" style="font-family: 'Saira', sans-serif; font-size: 2.5rem; letter-spacing: 3px; color: #fff;">
@@ -964,6 +964,16 @@ input:checked + .slider:before { transform: translateX(26px); }
   });
 
   initializePeer();
+
+  // Set last updated time
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const minute = String(now.getMinutes()).padStart(2, '0');
+  const lastUpdated = `${year}-${month}-${day} ${hour}:${minute}`;
+  document.getElementById('version-display').textContent = `Updated: ${lastUpdated}`;
 
   let startX=0,startY=0;
   window.addEventListener("touchstart",e=>{

@@ -277,8 +277,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
 .version-display {
     position: absolute;
     bottom: 0.5rem;
-    right: 2rem;
-    font-size: 1.2rem;
+    right: 1.5rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.2);
     font-family: monospace;
 }
@@ -443,7 +443,7 @@ body.hide-cursor {
       </div>
     </div>
     <div class="start-prompt">press enter to start</div>
-    <div class="version-display">v1.2.0</div>
+    <div class="version-display" id="version-display"></div>
   </section>
 
   <section class="slide" id="slide-1">
@@ -835,6 +835,16 @@ body.hide-cursor {
   }
 
   initializePeer();
+
+  // Set last updated time
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const minute = String(now.getMinutes()).padStart(2, '0');
+  const lastUpdated = `${year}-${month}-${day} ${hour}:${minute}`;
+  document.getElementById('version-display').textContent = `Updated: ${lastUpdated}`;
 
   window.addEventListener("keydown",e=>{
     const k=e.key;

@@ -106,7 +106,7 @@
             position: fixed;
             bottom: 5px;
             right: 10px;
-            font-size: 1.2rem;
+            font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.2);
             font-family: monospace;
         }
@@ -152,7 +152,7 @@
     </div>
 </div>
 
-<div class="version-display">v1.2.0</div>
+<div class="version-display" id="version-display"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -273,6 +273,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initializePeer();
+
+    // Set last updated time
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const lastUpdated = `${year}-${month}-${day} ${hour}:${minute}`;
+    document.getElementById('version-display').textContent = `Updated: ${lastUpdated}`;
 });
 </script>
 
