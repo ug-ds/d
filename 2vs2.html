@@ -786,7 +786,9 @@ body.hide-cursor {
           connectionStatus.textContent = 'Remote Connected!';
           connectionStatus.style.color = 'lightgreen';
           console.log('Connected to remote: ' + conn.peer);
-          conn.send({ type: 'presentation-id', id: '2vs2' });
+          setTimeout(() => {
+            conn.send({ type: 'presentation-id', id: '2vs2' });
+          }, 500); // Add a small delay to ensure the data channel is ready
 
           conn.on('data', handleRemoteCommand);
           conn.on('close', () => {
