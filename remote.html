@@ -102,12 +102,20 @@
         .grid-btn.span-3 {
             grid-column: span 3;
         }
+        .version-display {
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.2);
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="connect-view">
+    <div id="connect-view" style="width: 100%;">
         <h1>Enter Connection Code</h1>
         <input type="text" id="code-input" maxlength="6" inputmode="numeric" placeholder="______">
         <button id="connect-btn">Connect</button>
@@ -115,21 +123,36 @@
     </div>
 
     <div id="controls-view">
-        <div class="button-grid">
-            <button class="grid-btn" data-command="showSlide" data-param="1">1</button>
-            <button class="grid-btn" data-command="showSlide" data-param="2">2</button>
-            <button class="grid-btn" data-command="showSlide" data-param="3">3</button>
-            <button class="grid-btn" data-command="showSlide" data-param="4">4</button>
-            <button class="grid-btn" data-command="showSlide" data-param="5">5</button>
-            <button class="grid-btn" data-command="showSlide" data-param="6">6</button>
+        <!-- Layout for 1vsN -->
+        <div class="button-grid" id="grid-1vsN" style="display: none; font-size: 1.2rem;">
+            <button class="grid-btn" data-command="showSlide" data-param="1">Logo</button>
+            <button class="grid-btn" data-command="showSlide" data-param="2">Rules</button>
+            <button class="grid-btn" data-command="showSlide" data-param="3">Start</button>
+            <button class="grid-btn" data-command="showSlide" data-param="4">Timer 1</button>
+            <button class="grid-btn" data-command="showSlide" data-param="5">Timer 2</button>
+            <button class="grid-btn" data-command="showSlide" data-param="5">Vote</button>
             <button class="grid-btn" data-command="showSlide" data-param="0">Home</button>
-            <button class="grid-btn" data-command="countdown">Countdown</button>
+            <button class="grid-btn" data-command="countdown">3-2-1</button>
             <button class="grid-btn" data-command="overlay">Overlay</button>
+            <button class="grid-btn span-3" data-command="toggleTimer">Play/Stop Timer</button>
+            <button class="grid-btn span-3" data-command="resetTimer">Reset Timer</button>
+        </div>
+        <!-- Layout for 2vs2 -->
+        <div class="button-grid" id="grid-2vs2" style="display: none; font-size: 1.2rem;">
+            <button class="grid-btn" data-command="showSlide" data-param="1">Res 1</button>
+            <button class="grid-btn" data-command="showSlide" data-param="2">Res 2</button>
+            <button class="grid-btn" data-command="showSlide" data-param="3">Res 3</button>
+            <button class="grid-btn" data-command="showSlide" data-param="4">Logo</button>
+            <button class="grid-btn" data-command="showSlide" data-param="5">Timer</button>
+            <button class="grid-btn" data-command="showSlide" data-param="6">End</button>
+            <button class="grid-btn span-3" data-command="showSlide" data-param="0">Home</button>
             <button class="grid-btn span-3" data-command="toggleTimer">Play/Stop Timer</button>
             <button class="grid-btn span-3" data-command="resetTimer">Reset Timer</button>
         </div>
     </div>
 </div>
+
+<div class="version-display">v1.2.0</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -138,13 +161,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const codeInput = document.getElementById('code-input');
     const connectBtn = document.getElementById('connect-btn');
     const statusEl = document.getElementById('status');
+    const grid1vsN = document.getElementById('grid-1vsN');
+    const grid2vs2 = document.getElementById('grid-2vs2');
 
     let peer = null;
     let conn = null;
     const PEER_PREFIX = 'ugds-slides-';
 
     function initializePeer() {
-        peer = new Peer();
+        const peerConfig = {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                {
+                    urls: "turn:openrelay.metered.ca:80",
+                    username: "openrelayproject",
+                    credential: "openrelayproject",
+                },
+                {
+                    urls: "turn:global.turn.twilio.com:3478?transport=udp",
+                    username: "7b05221b2b15b3d2b32f3f78c8bd8b656e184895445733348a73f5c5d393f283",
+                    credential: "aVv/z1iGz3pPZJ2i3hL9vAUn+sAnb3Iqg2JdJVCmCgM="
+                }
+            ]
+        };
+        peer = new Peer(undefined, { config: peerConfig });
         peer.on('open', id => {
             console.log('My peer ID is: ' + id);
         });
@@ -166,15 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
         conn = peer.connect(peerId);
 
         conn.on('open', () => {
-            statusEl.textContent = 'Connected!';
-            setTimeout(() => {
-                connectView.style.display = 'none';
-                controlsView.style.display = 'block';
-            }, 500);
+            // Connection is open, but wait for the presentation to identify itself.
+            statusEl.textContent = 'Handshaking...';
         });
 
         conn.on('data', data => {
             console.log('Received', data);
+            if (data.type === 'presentation-id') {
+                statusEl.textContent = 'Connected!';
+                
+                // Hide all grids first
+                grid1vsN.style.display = 'none';
+                grid2vs2.style.display = 'none';
+
+                // Show the correct grid
+                if (data.id === '1vsN') grid1vsN.style.display = 'grid';
+                else if (data.id === '2vs2') grid2vs2.style.display = 'grid';
+
+                connectView.style.display = 'none';
+                controlsView.style.display = 'block';
+            }
         });
 
         conn.on('close', () => {

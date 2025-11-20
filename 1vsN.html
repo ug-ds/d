@@ -241,6 +241,14 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:h
   text-transform: uppercase;
   font-family: "Saira", sans-serif;
 }
+.version-display {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 2rem;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: monospace;
+}
 body.hide-cursor {
   cursor: none;
 }
@@ -377,6 +385,7 @@ input:checked + .slider:before { transform: translateX(26px); }
       <button id="reset-settings-btn" class="reset-button">Reset to Default</button>
     </div>
     <div class="start-prompt">press enter to start</div>
+    <div class="version-display">v1.2.0</div>
     <div id="remote-control-container" style="position: absolute; bottom: 2rem; left: 2rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; text-align: center; z-index: 20;">
       <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--accent);">Remote Code</h3>
       <div id="peer-id-display" style="font-family: 'Saira', sans-serif; font-size: 2.5rem; letter-spacing: 3px; color: #fff;">
