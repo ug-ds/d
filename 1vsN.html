@@ -824,7 +824,19 @@ input:checked + .slider:before { transform: translateX(26px); }
   function initializePeer() {
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       const peerId = PEER_PREFIX + code;
-      peer = new Peer(peerId);
+      const peerConfig = {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                {
+                    urls: "turn:openrelay.metered.ca:80",
+                    username: "openrelayproject",
+                    credential: "openrelayproject",
+                },
+            ]
+        };
+      peer = new Peer(peerId, { config: peerConfig });
 
       peer.on('open', id => {
           console.log('My peer ID is: ' + id);
