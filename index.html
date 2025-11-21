@@ -153,6 +153,11 @@
       padding-left: 2rem;
     }
 
+    .hero-right .hero-title-line {
+      /* This will be overridden for mobile */
+      text-align: left;
+    }
+
     .hero-title {
       font-family: "Saira", sans-serif;
       font-size: clamp(3rem, 10vw, 7rem);
@@ -413,6 +418,35 @@
       }
       .nav-links {
         display: none; /* Hide nav links on mobile for now */
+      }
+
+      /* Hero Section Mobile */
+      .hero-section {
+        grid-template-columns: 1fr; /* Stack logo and title */
+        height: auto; /* Adjust height for stacked content */
+        padding: 4rem 1rem;
+        gap: 2rem;
+      }
+      .hero-left {
+        justify-content: center; /* Center the logo */
+        padding-right: 0;
+      }
+      .hero-right {
+        padding-left: 0;
+        align-items: center; /* Center the text block */
+      }
+      .hero-right .hero-title-line {
+        text-align: center; /* Center each line of the title */
+      }
+
+      /* About Section Mobile */
+      .about-section {
+        grid-template-columns: 1fr; /* Stack elements */
+        padding: 4rem 1.5rem;
+      }
+      .about-text {
+        font-size: 1.3rem;
+        text-align: left;
       }
     }
   </style>
