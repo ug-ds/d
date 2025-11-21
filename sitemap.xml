@@ -3,7 +3,7 @@
 
   <!-- Main Page -->
   <url>
-    <loc>https://ug-ds.github.io/index.html</loc>
+    <loc>https://ug-ds.github.io</loc>
     <lastmod>2024-05-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
@@ -11,13 +11,13 @@
 
   <!-- Debating Slides Pages -->
   <url>
-    <loc>https://ug-ds.github.io/1vsN.html</loc>
+    <loc>https://ug-ds.github.io/1vsN</loc>
     <lastmod>2024-05-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ug-ds.github.io/2vs2.html</loc>
+    <loc>https://ug-ds.github.io/2vs2</loc>
     <lastmod>2024-05-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
