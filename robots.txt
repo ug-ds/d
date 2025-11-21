@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ug-ds.github.io/sitemap.xml
