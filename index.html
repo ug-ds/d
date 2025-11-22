@@ -524,6 +524,8 @@
       <div class="nav-reveal-container"><a href="https://www.facebook.com/people/UG-Debating-Society/61573906987205/" target="_blank" class="nav-link">Facebook</a></div>
       <div class="nav-reveal-container"><a href="https://www.instagram.com/ug_d.s/" target="_blank" class="nav-link">Instagram</a></div>
       <div class="nav-reveal-container"><a href="https://ug.edu.ge/" target="_blank" class="nav-link">UG</a></div>
+      <div class="nav-reveal-container" style="margin-left: 8rem;"><a href="slides.html" class="nav-link">SLIDES</a></div>
+      <div class="nav-reveal-container"><a href="FAQ.html" class="nav-link">FAQs</a></div>
     </div>
     <div class="nav-reveal-container">
       <a href="remote.html" class="remote-link" title="Open Remote Control" target="_blank">
@@ -559,84 +561,7 @@
       </div>
     </section>
 
-    <div class="games-section">
-      <div class="reveal-container">
-        <h2 class="section-title">DEBATING SLIDES</h2>
-      </div>
-      <div id="button-gallery" class="gallery">
-        <!-- Cards will be inserted here by the script -->
-      </div>
-    </div>
   </main>
-
-  <script>
-    const links = [
-      { 
-        name: "1 VS N", 
-        url: "1vsN.html", 
-        description: "ჩარლი კირკის მსგავსი დებატები, სადაც ერთი ადამიანი კონკრეტული დროის განმავლობაში ედებატება რამოდენიმე მოწინააღმდეგეს",
-        image: "assets/IMG-1VSN.svg"
-      },
-      { 
-        name: "2 VS 2", 
-        url: "2vs2.html", 
-        description: "2-2 ზე დებატები, სადაც გუნდურად ედებატება ორი ადამიანი",
-        image: "assets/IMG-2VS2.svg"
-      },
-    ];
-
-    const gallery = document.getElementById('button-gallery');
-
-    links.forEach(link => {
-      const a = document.createElement('a');
-      a.href = link.url; // The href is on the main card
-      a.className = 'gallery-button';
-
-      a.innerHTML = `
-        <img src="${link.image}" alt="${link.name}" class="card-image">
-        <div class="card-content">
-          <h3 class="card-title">${link.name}</h3>
-          <p class="card-description">${link.description}</p>
-        </div>
-      `;
-      gallery.appendChild(a);
-    });
-  </script>
-
-  <script>
-    // Scroll-triggered fade-in animation for the games section
-    document.addEventListener('DOMContentLoaded', () => {
-        const gamesSection = document.querySelector('.games-section');
-        const gamesTitle = document.querySelector('.games-section .section-title');
-        const galleryButtons = document.querySelectorAll('.gallery-button');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    gamesSection.style.opacity = '1';
-                    gamesTitle.classList.add('animate-title-in');
-                    galleryButtons.forEach((button, index) => {
-                        setTimeout(() => {
-                            button.style.opacity = '1';
-                            button.style.transform = 'translateY(0)';
-                        }, 300 + 150 * index); // Stagger the animation, start after title
-                    });
-                } else {
-                    // Reset when out of view
-                    gamesTitle.classList.remove('animate-title-in');
-                    galleryButtons.forEach(button => {
-                        button.style.opacity = '0';
-                        button.style.transform = 'translateY(100px)';
-                    });
-                }
-            });
-        }, {
-            threshold: 0.2
-        });
-
-        if (gamesSection) observer.observe(gamesSection);
-    });
-  </script>
 
   <script>
     // Scroll-triggered animation for the about section
@@ -664,7 +589,7 @@
               // Stagger the animation for each word
               setTimeout(() => {
                 word.classList.add('animate-text-in');
-              }, 300 + index * 30); // Start after title, with a small delay between words
+              }, 100 + index * 50); // Start after title, with a small delay between words
             });
           } else {
             // Reset when out of view
@@ -692,8 +617,8 @@
         document.querySelector('.navbar .remote-link')
       ];
 
-      const startDelay = 1200; // Start after hero animation has begun
-      const stagger = 150; // Delay between each item
+      const startDelay = 200; // Start after hero animation has begun
+      const stagger = 100; // Delay between each item
 
       navItems.forEach((item, index) => {
         if (item) {
